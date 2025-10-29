@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTracker - Financial Expense Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <h1 class="header__title">FinTracker</h1>
+                <nav class="nav">
+                    <button id="dashboardBtn" class="btn btn--outline">Dashboard</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="dashboard">
+                <div class="dashboard__header">
+                    <h2>Financial Expense Management System</h2>
+                    <p>Manage your Room, PG, Mess and Personal expenses efficiently</p>
+                </div>
+                
+                <div class="dashboard__grid">
+                    <!-- Room Owner Card -->
+                    <div class="card dashboard__card" onclick="showSection('room')">
+                        <div class="card__body">
+                            <div class="dashboard__card-icon" style="background-color: var(--color-bg-1);">🏠</div>
+                            <h3>Room Owner</h3>
+                            <p>Track tenant details, rent collection, electricity bills</p>
+                            <div class="dashboard__stats">
+                                <span id="roomStats">0 Tenants</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PG Owner Card -->
+                    <div class="card dashboard__card" onclick="showSection('pg')">
+                        <div class="card__body">
+                            <div class="dashboard__card-icon" style="background-color: var(--color-bg-2);">🏢</div>
+                            <h3>PG Owner</h3>
+                            <p>Manage PG members, rent, electricity and food charges</p>
+                            <div class="dashboard__stats">
+                                <span id="pgStats">0 Members</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mess Owner Card -->
+                    <div class="card dashboard__card" onclick="showSection('mess')">
+                        <div class="card__body">
+                            <div class="dashboard__card-icon" style="background-color: var(--color-bg-3);">🍽️</div>
+                            <h3>Mess Owner</h3>
+                            <p>Track daily food expenses and meal costs</p>
+                            <div class="dashboard__stats">
+                            
+                                <span id="messStats">Today</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Expenses Card -->
+                    <div class="card dashboard__card" onclick="showSection('personal')">
+                        <div class="card__body">
+                            <div class="dashboard__card-icon" style="background-color: var(--color-bg-4);">💰</div>
+                            <h3>Personal Expenses</h3>
+                            <p>Track your personal daily expenses and budget</p>
+                            <div class="dashboard__stats">
+                                <span id="personalStats">₹0 This Month</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Room Owner Section -->
+            <section id="roomSection" class="section hidden">
+                <div class="section__header">
+                    <h2>Room Owner Management</h2>
+                    <button id="addRoomBtn" class="btn btn--primary">Add New Tenant</button>
+                </div>
+
+                <!-- Room Owner Form -->
+                <div id="roomForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="roomFormTitle">Add New Tenant</h3>
+                            <button id="closeRoomForm" class="btn btn--ghost">×</button>
+                        </div>
+
+                        <div class="card__body">
+                            <form id="roomOwnerForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="tenantName">Tenant Name</label>
+                                        <input type="text" id="tenantName" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="roomNumber">Room Number</label>
+                                        <input type="text" id="roomNumber" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="rentAmount">Monthly Rent (₹)</label>
+                                        <input type="number" id="rentAmount" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="joinDate">Join Date</label>
+                                        <input type="date" id="joinDate" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="electricityBill">Electricity Bill (₹)</label>
+                                        <input type="number" id="electricityBill" value="0">
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="roomStatus">Payment Status</label>
+                                        <select id="roomStatus" required>
+                                            <option value="paid">Paid</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="overdue">Overdue</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Tenant</button>
+                                    <button type="button" id="cancelRoomForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Room Owner Data Display -->
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Person Records</h3>
+                            <input type="text" id="roomSearch" placeholder="Search Person..." class="form__group" oninput="searchRecords('room')"/>
+
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="roomTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Person Name</th>
+                                            <th>Room No.</th>
+                                            <th>Monthly Rent</th>
+                                            <th>Join Date</th>
+                                            <th>Electricity</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PG Owner Section -->
+            <section id="pgSection" class="section hidden">
+                <div class="section__header">
+                    <h2>PG Owner Management</h2>
+                    <button id="addPGBtn" class="btn btn--primary">Add New Member</button>
+                </div>
+
+                <!-- PG Owner Form -->
+                <div id="pgForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="pgFormTitle">Add New PG Member</h3>
+                            <button id="closePGForm" class="btn btn--ghost">×</button>
+                        </div>
+                        <div class="card__body">
+                            <form id="pgOwnerForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="memberName">Member Name</label>
+                                        <input type="text" id="memberName" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="bedNumber">Bed Number</label>
+                                        <input type="text" id="bedNumber" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="monthlyRent">Monthly Rent (₹)</label>
+                                        <input type="number" id="monthlyRent" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="pgJoinDate">Join Date</label>
+                                        <input type="date" id="pgJoinDate" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="electricityCharge">Electricity Charge (₹)</label>
+                                        <input type="number" id="electricityCharge" value="0">
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="foodCharge">Food Charge (₹)</label>
+                                        <input type="number" id="foodCharge" value="0">
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="pgMemberStatus">Member Status</label>
+                                        <select id="pgMemberStatus" required>
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Member</button>
+                                    <button type="button" id="cancelPGForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PG Owner Data Display -->
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>PG Member Records</h3>
+                            <input type="text" id="pgSearch" placeholder="Search Member..." class="form__group" oninput="searchRecords('pg')"/>
+
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="pgTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Member Name</th>
+                                            <th>Bed No.</th>
+                                            <th>Monthly Rent</th>
+                                            <th>Join Date</th>
+                                            <th>Electricity</th>
+                                            <th>Food Charge</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mess Owner Section -->
+            <section id="messSection" class="section hidden">
+                <div class="section__header">
+                    <h2>Mess Owner Management</h2>
+                    <button id="addMessBtn" class="btn btn--primary">Add Food Expense</button>
+                </div>
+
+                <!-- Mess Owner Form -->
+                <div id="messForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="messFormTitle">Add Food Expense</h3>
+                            <button id="closeMessForm" class="btn btn--ghost">×</button>
+                        </div>
+                        <div class="card__body">
+                            <form id="messOwnerForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="messDate">Date</label>
+                                        <input type="date" id="messDate" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="mealType">Meal Type</label>
+                                        <select id="mealType" required>
+                                            <option value="Breakfast">Breakfast</option>
+                                            <option value="Lunch">Lunch</option>
+                                            <option value="Dinner">Dinner</option>
+                                            <option value="Snacks">Snacks</option>
+                                        </select>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expense">Total Expense (₹)</label>
+                                        <input type="number" id="expense" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="memberCount">Number of Members</label>
+                                        <input type="number" id="memberCount" required min="1">
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Expense</button>
+                                    <button type="button" id="cancelMessForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mess Owner Data Display -->
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Food Expense Records</h3>
+
+                            <input type="text" id="messSearch" placeholder="Search Meal Type..." class="form__group" oninput="searchRecords('mess')" />
+
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="messTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Meal Type</th>
+                                            <th>Total Expense</th>
+                                            <th>Members</th>
+                                            <th>Per Person Cost</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Personal Expenses Section -->
+            <section id="personalSection" class="section hidden">
+                <div class="section__header">
+                    <h2>Personal Expenses</h2>
+                    <button id="addPersonalBtn" class="btn btn--primary">Add New Expense</button>
+                </div>
+
+                <!-- Personal Expenses Form -->
+                <div id="personalForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="personalFormTitle">Add Personal Expense</h3>
+                            <button id="closePersonalForm" class="btn btn--ghost">×</button>
+                        </div>
+                        <div class="card__body">
+                            <form id="personalExpensesForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="expenseDescription">Description</label>
+                                        <input type="text" id="expenseDescription" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expenseAmount">Amount (₹)</label>
+                                        <input type="number" id="expenseAmount" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expenseCategory">Category</label>
+                                        <select id="expenseCategory" required>
+                                            <option value="Food">Food</option>
+                                            <option value="Transport">Transport</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Bills">Bills</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Healthcare">Healthcare</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expenseDate">Date</label>
+                                        <input type="date" id="expenseDate" required>
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Expense</button>
+                                    <button type="button" id="cancelPersonalForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Expenses Data Display -->
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Personal Expense Records</h3>
+                            <input type="text" id="personalSearch" placeholder="Search Description..." class="form__group" oninput="searchRecords('personal')" />
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="personalTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Category</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
