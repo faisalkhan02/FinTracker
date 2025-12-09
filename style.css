@@ -618,3 +618,51 @@ body {
 .property-btn:hover {
   background: #1e40af;
 }
+/* ===== Summary Cards ===== */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.summary-card {
+    background: #f7f9fc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    text-align: center;
+}
+
+.summary-card p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.summary-card h3 {
+    margin-top: 5px;
+    font-size: 22px;
+    color: #333;
+}
+
+/* ===== Filter Bar ===== */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.filter-bar .form__group {
+    padding: 6px;
+    min-width: 150px;
+}
+
+/* Notes Column */
+table td:nth-child(6) {
+    max-width: 200px;
+    white-space: wrap;
+}
+
