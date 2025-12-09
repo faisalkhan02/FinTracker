@@ -102,7 +102,84 @@ function showDashboard() {
   updateDashboardStats();
 }
 
+
+// Show specific section room
+const buildingListContainer = document.getElementById('building-list-container');
+ const addBuildingBtn = document.getElementById('add-building-btn');
+     const buildingNameInput = document.getElementById('building-name');
+ if(addBuildingBtn) {
+        addBuildingBtn.addEventListener('click', () => {
+            const name = buildingNameInput.value.trim();
+            if (!name) {
+                alert('Please enter a name for the building.');
+                return;
+            }
+            
+            const newId = crypto.randomUUID();
+            buildingData[newId] = {
+                name: name,
+                Floors: {}
+            };
+            
+            buildingNameInput.value = '';
+            saveBuildingData();
+            renderBuildingConfig();
+            alert(`Building "${name}" registered!`);
+        });
+    }
+
+    function renderBuildingConfig() {
+        // showSection(sectionName);
+        // window.location.reload();
+        if(!buildingListContainer) return;
+        buildingListContainer.innerHTML = '';
+        const buildingIds = Object.keys(buildingData);
+
+        if (buildingIds.length === 0) {
+            buildingListContainer.innerHTML = '<p class="text-gray-500 text-center col-span-full">No buildings registered yet.</p>';
+            return;
+        }
+
+        buildingIds.forEach(id => {
+            const building = buildingData[id];
+            const floorCount = Object.keys(building.Floors).length;
+            // Approximation for UI
+            const roomCount = Object.values(building.Floors).reduce((acc, f) => acc + Object.keys(f).length, 0);
+
+            const card = document.createElement('div');
+            card.className = 'property-card fade-in bg-white rounded-lg shadow overflow-hidden';
+            
+            // Using a simple background style
+            card.innerHTML = `
+                <div class="h-32 bg-gray-300 bg-cover bg-center" style="background-image: url('https://picsum.photos/seed/${id}/600/400')"></div>
+                <div class="p-4">
+                    <h2 class="text-xl font-bold text-gray-800">${building.name}</h2>
+                    <p class="text-xs text-gray-500 mb-3">ID: ${id.substring(0, 8)}...</p>
+                    
+                    <div class="flex justify-between text-sm text-gray-600 mb-4 border-t border-b py-2">
+                        <div class="text-center">
+                            <span class="block font-bold text-gray-800">${floorCount}</span>
+                            <span>Floors</span>
+                        </div>
+                        <div class="text-center border-l pl-4">
+                            <span class="block font-bold text-gray-800">${roomCount}</span>
+                            <span>Rooms</span>
+                        </div>
+                    </div>
+
+                    <button data-id="${id}" class="select-building-btn w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
+                        ${floorCount > 0 ? 'Manage Property' : 'Add Floors & Rooms'}
+                    </button>
+                </div>
+            `;
+            buildingListContainer.appendChild(card);
+        });
+    }
+//end room
+
+
 function showSection(sectionName) {
+    // console.log("ss");
   document.getElementById("dashboard").classList.add("hidden");
   document.querySelectorAll(".section").forEach(s => s.classList.add("hidden"));
   const section = document.getElementById(sectionName + "Section");
@@ -111,6 +188,57 @@ function showSection(sectionName) {
       // Load legacy data if needed (though room uses new system)
       loadSectionData(sectionName);
   }
+// const buildingListContainer = document.getElementById('building-list-container');
+//   console.log('room section');
+//         if (sectionName ==='room') {
+//              if(!buildingListContainer) return;
+//               buildingListContainer.innerHTML = '';
+//              const buildingIds = Object.keys(buildingData);
+
+//            if (buildingIds.length === 0) {
+//             buildingListContainer.innerHTML = '<p class="text-gray-500 text-center col-span-full">No buildings registered yet.</p>';
+//             return;
+//            }
+
+//         buildingIds.forEach(id => {
+//             const building = buildingData[id];
+//             const floorCount = Object.keys(building.Floors).length;
+//             // Approximation for UI
+//             const roomCount = Object.values(building.Floors).reduce((acc, f) => acc + Object.keys(f).length, 0);
+
+//             const card = document.createElement('div');
+//             card.className = 'property-card fade-in bg-white rounded-lg shadow overflow-hidden';
+            
+//             // Using a simple background style
+//             card.innerHTML = `
+//                 <div class="h-32 bg-gray-300 bg-cover bg-center" style="background-image: url('https://picsum.photos/seed/${id}/600/400')"></div>
+//                 <div class="p-4">
+//                     <h2 class="text-xl font-bold text-gray-800">${building.name}</h2>
+//                     <p class="text-xs text-gray-500 mb-3">ID: ${id.substring(0, 8)}...</p>
+                    
+//                     <div class="flex justify-between text-sm text-gray-600 mb-4 border-t border-b py-2">
+//                         <div class="text-center">
+//                             <span class="block font-bold text-gray-800">${floorCount}</span>
+//                             <span>Floors</span>
+//                         </div>
+//                         <div class="text-center border-l pl-4">
+//                             <span class="block font-bold text-gray-800">${roomCount}</span>
+//                             <span>Rooms</span>
+//                         </div>
+//                     </div>
+
+//                     <button data-id="${id}" class="select-building-btn w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
+//                         ${floorCount > 0 ? 'Manage Property' : 'Add Floors & Rooms'}
+//                     </button>
+//                 </div>
+//             `;
+//             buildingListContainer.appendChild(card);
+//         });
+//         }
+if (sectionName ==='room') {
+   console.log("✅ Rendering Building Config");
+    renderBuildingConfig();
+}
 }
 
 // Load and display section data
@@ -521,17 +649,43 @@ function getMonthName(monthKey) {
 }
 
 // --- LLM API Setup ---
-const API_KEY = ""; // Placeholder
-const API_URL = `https://generativ言語age.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
-const MAX_RETRIES = 3;
-
-async function fetchGemini(payload) {
-    // ... (Kept your API logic here, simplified for brevity in this snippet but functional)
-    // Assuming you fill this back in if you use the API. 
-    // For now returning a placeholder so it doesn't crash if clicked without key.
-    return "AI functionality requires a valid API Key.";
-}
-
+                    const API_KEY = "AIzaSyCCEoZR6BaCGQWBO1tBWLuz29jDls1FCNc"; // Placeholder, Canvas handles this
+                    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+                    const MAX_RETRIES = 3;
+            
+                    async function fetchGemini(payload) {
+                        for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+                            try {
+                                const response = await fetch(API_URL, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(payload)
+                                });
+            
+                                if (response.status === 429 && attempt < MAX_RETRIES - 1) {
+                                    const delay = Math.pow(2, attempt) * 1000;
+                                    await new Promise(resolve => setTimeout(resolve, delay));
+                                    continue;
+                                }
+            
+                                if (!response.ok) {
+                                    throw new Error(`API call failed with status: ${response.status}`);
+                                }
+            
+                                const result = await response.json();
+                                const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Error: Could not retrieve generated text. Check console for details.";
+                                return text;
+            
+                            } catch (error) {
+                                if (attempt === MAX_RETRIES - 1) {
+                                    console.error("Gemini API failed after all retries:", error);
+                                    return `Error: Failed to connect to AI after multiple attempts. ${error.message}`;
+                                }
+                            }
+                        }
+                        return "Error: An unexpected issue occurred during API communication.";
+                    }
+                    
 // Helper function to create default occupant data structure
 function createDefaultOccupant(name, aadhar, joinDate, securityAmount, proofStatus, proofFileName) {
     return {
@@ -563,6 +717,7 @@ function saveBuildingData() {
     localStorage.setItem(BUILDING_STORAGE_KEY, JSON.stringify(buildingData));
     updateDashboardStats(); // Update dashboard numbers when saving
 }
+
 
 // We use a SECOND event listener for the Room Manager part.
 // This is fine as long as the first part doesn't crash.
@@ -686,72 +841,78 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- BUILDING CONFIGURATION LOGIC ---
-    if(addBuildingBtn) {
-        addBuildingBtn.addEventListener('click', () => {
-            const name = buildingNameInput.value.trim();
-            if (!name) {
-                alert('Please enter a name for the building.');
-                return;
-            }
+    // if(addBuildingBtn) {
+    //     addBuildingBtn.addEventListener('click', () => {
+    //         const name = buildingNameInput.value.trim();
+    //         if (!name) {
+    //             alert('Please enter a name for the building.');
+    //             return;
+    //         }
             
-            const newId = crypto.randomUUID();
-            buildingData[newId] = {
-                name: name,
-                Floors: {}
-            };
+    //         const newId = crypto.randomUUID();
+    //         buildingData[newId] = {
+    //             name: name,
+    //             Floors: {}
+    //         };
             
-            buildingNameInput.value = '';
-            saveBuildingData();
-            renderBuildingConfig();
-            alert(`Building "${name}" registered!`);
-        });
-    }
+    //         buildingNameInput.value = '';
+    //         saveBuildingData();
+    //         renderBuildingConfig();
+    //         alert(`Building "${name}" registered!`);
+    //     });
+    // }
 
-    function renderBuildingConfig() {
-        if(!buildingListContainer) return;
-        buildingListContainer.innerHTML = '';
-        const buildingIds = Object.keys(buildingData);
+    // function renderBuildingConfig() {
+    //     showSection(sectionName);
+    //     window.location.reload();
+    //     if(!buildingListContainer) return;
+    //     buildingListContainer.innerHTML = '';
+    //     const buildingIds = Object.keys(buildingData);
 
-        if (buildingIds.length === 0) {
-            buildingListContainer.innerHTML = '<p class="text-gray-500 text-center col-span-full">No buildings registered yet.</p>';
-            return;
-        }
+    //     if (buildingIds.length === 0) {
+    //         buildingListContainer.innerHTML = '<p class="text-gray-500 text-center col-span-full">No buildings registered yet.</p>';
+    //         return;
+    //     }
 
-        buildingIds.forEach(id => {
-            const building = buildingData[id];
-            const floorCount = Object.keys(building.Floors).length;
-            // Approximation for UI
-            const roomCount = Object.values(building.Floors).reduce((acc, f) => acc + Object.keys(f).length, 0);
+    //     buildingIds.forEach(id => {
+    //         const building = buildingData[id];
+    //         const floorCount = Object.keys(building.Floors).length;
+    //         // Approximation for UI
+    //         const roomCount = Object.values(building.Floors).reduce((acc, f) => acc + Object.keys(f).length, 0);
 
-            const card = document.createElement('div');
-            card.className = 'property-card fade-in bg-white rounded-lg shadow overflow-hidden';
+    //         const card = document.createElement('div');
+    //         card.className = 'property-card fade-in bg-white rounded-lg shadow overflow-hidden';
             
-            // Using a simple background style
-            card.innerHTML = `
-                <div class="h-32 bg-gray-300 bg-cover bg-center" style="background-image: url('https://picsum.photos/seed/${id}/600/400')"></div>
-                <div class="p-4">
-                    <h2 class="text-xl font-bold text-gray-800">${building.name}</h2>
-                    <p class="text-xs text-gray-500 mb-3">ID: ${id.substring(0, 8)}...</p>
+    //         // Using a simple background style
+    //         card.innerHTML = `
+    //             <div class="h-32 bg-gray-300 bg-cover bg-center" style="background-image: url('https://picsum.photos/seed/${id}/600/400')"></div>
+    //             <div class="p-4">
+    //                 <h2 class="text-xl font-bold text-gray-800">${building.name}</h2>
+    //                 <p class="text-xs text-gray-500 mb-3">ID: ${id.substring(0, 8)}...</p>
                     
-                    <div class="flex justify-between text-sm text-gray-600 mb-4 border-t border-b py-2">
-                        <div class="text-center">
-                            <span class="block font-bold text-gray-800">${floorCount}</span>
-                            <span>Floors</span>
-                        </div>
-                        <div class="text-center border-l pl-4">
-                            <span class="block font-bold text-gray-800">${roomCount}</span>
-                            <span>Rooms</span>
-                        </div>
-                    </div>
+    //                 <div class="flex justify-between text-sm text-gray-600 mb-4 border-t border-b py-2">
+    //                     <div class="text-center">
+    //                         <span class="block font-bold text-gray-800">${floorCount}</span>
+    //                         <span>Floors</span>
+    //                     </div>
+    //                     <div class="text-center border-l pl-4">
+    //                         <span class="block font-bold text-gray-800">${roomCount}</span>
+    //                         <span>Rooms</span>
+    //                     </div>
+    //                 </div>
 
-                    <button data-id="${id}" class="select-building-btn w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
-                        ${floorCount > 0 ? 'Manage Property' : 'Add Floors & Rooms'}
-                    </button>
-                </div>
-            `;
-            buildingListContainer.appendChild(card);
-        });
-    }
+    //                 <button data-id="${id}" class="select-building-btn w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition">
+    //                     ${floorCount > 0 ? 'Manage Property' : 'Add Floors & Rooms'}
+    //                 </button>
+    //             </div>
+    //         `;
+    //         buildingListContainer.appendChild(card);
+    //     });
+    // }
+    // function showSection(SectionName){
+        
+        
+    // }
     
     if(buildingListContainer) {
         buildingListContainer.addEventListener('click', (e) => {
@@ -792,6 +953,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentBuildingId = null;
             showView('BUILDING_CONFIG_VIEW');
         });
+        
     }
 
 
@@ -1638,3 +1800,145 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+// ======================================
+// STORE RECORDS (Your existing array)
+// ======================================
+let messRecords = [];  // If already exists, ignore this line
+
+// ======================================
+// UPDATE SUMMARY CARDS
+// ======================================
+function updateMessSummary(filteredRecords) {
+    let totalExpense = 0;
+    let totalMembers = 0;
+
+    filteredRecords.forEach(r => {
+        totalExpense += Number(r.expense);
+        totalMembers += Number(r.members);
+    });
+
+    let avg = filteredRecords.length > 0 ? (totalExpense / totalMembers).toFixed(2) : 0;
+
+    document.getElementById("messTotalExpense").innerText = "₹" + totalExpense;
+    document.getElementById("messTotalMembers").innerText = totalMembers;
+    document.getElementById("messAvgPerPerson").innerText = "₹" + avg;
+}
+
+// ======================================
+// DISPLAY TABLE
+// ======================================
+function renderMessTable(records) {
+    const tableBody = document.querySelector("#messTable tbody");
+    tableBody.innerHTML = "";
+
+    records.forEach((r, index) => {
+        const row = `
+            <tr>
+                <td>${r.date}</td>
+                <td>${r.meal}</td>
+                <td>₹${r.expense}</td>
+                <td>${r.members}</td>
+                <td>₹${r.perPerson}</td>
+                <td>${r.note || "-"}</td>
+                <td>
+                    <button onclick="editMess(${index})">✏️</button>
+                    <button onclick="deleteMess(${index})">🗑️</button>
+                </td>
+            </tr>
+        `;
+        tableBody.innerHTML += row;
+    });
+
+    updateMessSummary(records);
+}
+
+// ======================================
+// SEARCH + FILTER FUNCTION
+// ======================================
+function searchRecords() {
+    const search = document.getElementById("messSearch").value.toLowerCase();
+    const mealFilter = document.getElementById("messMealFilter").value;
+    const from = document.getElementById("messFromDate").value;
+    const to = document.getElementById("messToDate").value;
+
+    let filtered = messRecords.filter(r => {
+
+        // Meal type dropdown filter
+        if (mealFilter && r.meal !== mealFilter) return false;
+
+        // Search by meal or notes
+        if (search && !r.meal.toLowerCase().includes(search) &&
+            !r.note.toLowerCase().includes(search)) {
+            return false;
+        }
+
+        // Date range filter
+        if (from && r.date < from) return false;
+        if (to && r.date > to) return false;
+
+        return true;
+    });
+
+    renderMessTable(filtered);
+}
+
+// ======================================
+// SAVE NEW EXPENSE
+// ======================================
+document.getElementById("messOwnerForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const date = document.getElementById("messDate").value;
+    const meal = document.getElementById("mealType").value;
+    const expense = Number(document.getElementById("expense").value);
+    const members = Number(document.getElementById("memberCount").value);
+    const note = document.getElementById("expenseNote").value;
+
+    const perPerson = (expense / members).toFixed(2);
+
+    messRecords.push({ date, meal, expense, members, perPerson, note });
+
+    renderMessTable(messRecords);
+
+    this.reset();
+    document.getElementById("messForm").classList.add("hidden");
+});
+
+// ======================================
+// DELETE RECORD
+// ======================================
+function deleteMess(index) {
+    messRecords.splice(index, 1);
+    renderMessTable(messRecords);
+}
+
+// ======================================
+// EDIT RECORD (Simple version)
+// ======================================
+function editMess(index) {
+    const r = messRecords[index];
+
+    document.getElementById("messDate").value = r.date;
+    document.getElementById("mealType").value = r.meal;
+    document.getElementById("expense").value = r.expense;
+    document.getElementById("memberCount").value = r.members;
+    document.getElementById("expenseNote").value = r.note;
+
+    document.getElementById("messForm").classList.remove("hidden");
+
+    document.getElementById("messOwnerForm").onsubmit = function (e) {
+        e.preventDefault();
+
+        messRecords[index] = {
+            date: document.getElementById("messDate").value,
+            meal: document.getElementById("mealType").value,
+            expense: Number(document.getElementById("expense").value),
+            members: Number(document.getElementById("memberCount").value),
+            perPerson: (expense / members).toFixed(2),
+            note: document.getElementById("expenseNote").value
+        };
+
+        renderMessTable(messRecords);
+        document.getElementById("messForm").classList.add("hidden");
+    };
+}
