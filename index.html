@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTracker - Financial Expense Management</title>
+    <link rel="icon" href="favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between">
+                <h1 class="header__title">FinTracker</h1>
+                <nav class="nav">
+                    <button id="dashboardBtn" class="btn btn--outline">Dashboard</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+           
+            <section id="dashboard" class="dashboard">
+                <div class="dashboard__header_new">
+                    <h2>Dashboard Overview</h2>
+                </div>
+                
+                <div class="new-dashboard-grid">
+                    <div class="new-dash-card new-dash-card--blue" onclick="showSection('room')">
+                        <div class="new-dash-card__icon">🏠</div>
+                        <div class="new-dash-card__count" id="roomCountBadge">0</div>
+                        <h3 class="new-dash-card__title">Room Owner</h3>
+                        <p class="new-dash-card__subtitle" id="roomStats">0 Tenants</p>
+                    </div>
+                    
+                    <div class="new-dash-card new-dash-card--green" onclick="showSection('pg')">
+                        <div class="new-dash-card__icon">🏢</div>
+                        <div class="new-dash-card__count" id="pgCountBadge">0</div>
+                        <h3 class="new-dash-card__title">PG Owner</h3>
+                        <p class="new-dash-card__subtitle" id="pgStats">0 Members</p>
+                    </div>
+    
+                    <div class="new-dash-card new-dash-card--orange" onclick="showSection('mess')">
+                        <div class="new-dash-card__icon">🍽️</div>
+                        <div class="new-dash-card__count" id="messCountBadge">0</div>
+                        <h3 class="new-dash-card__title">Mess Owner</h3>
+                        <p class="new-dash-card__subtitle" id="messStats">0 Expenses</p>
+                    </div>
+    
+                    <div class="new-dash-card new-dash-card--red" onclick="showSection('personal')">
+                        <div class="new-dash-card__icon">💰</div>
+                        <div class="new-dash-card__count" id="personalCountBadge">₹0</div>
+                        <h3 class="new-dash-card__title">Personal Expenses</h3>
+                        <p class="new-dash-card__subtitle" id="personalStats">₹0 This Month</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="roomSection" class="section hidden">
+                <div class="container mx-auto p-4 sm:p-8 max-w-7xl">
+        
+                    <header class="mb-6 border-b pb-4">
+                        <h1 class="text-3xl font-bold text-gray-900">Property Financial Manager</h1>
+                        <p class="text-lg text-gray-600 mt-1">Configure your properties, manage tenant details, and view financial reports.</p>
+                    </header>
+            
+                    <nav id="main-nav" class="mb-6 hidden">
+                        <div class="flex space-x-2 border-b border-gray-200">
+                            <button data-view="MAP_VIEW" class="nav-button py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-600 transition duration-150">Room Map</button>
+                            <button data-view="TENANT_VIEW" class="nav-button py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-600 transition duration-150">Tenant Registry</button>
+                            <button data-view="REPORT_VIEW" class="nav-button py-2 px-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-600 transition duration-150">Financial Report</button>
+                        </div>
+                    </nav>
+            
+                    <div id="app-container" class="view-content bg-white p-6 rounded-lg shadow-xl">
+                        
+                        <div id="BUILDING_CONFIG_VIEW" class="view">
+                            <h2 class="text-2xl font-semibold mb-6 text-blue-700">1. Select or Register a Property</h2>
+                            
+                            <div class="mb-6 p-4 border border-green-200 bg-green-50 rounded-lg">
+                                <label for="building-name" class="block text-sm font-medium text-gray-700 mb-2">Add New Building</label>
+                                <div class="flex space-x-3">
+                                    <input type="text" id="building-name" class="flex-grow px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500" placeholder="e.g., Main Apartment Complex">
+                                    <button id="add-building-btn" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-md shadow-md hover:bg-green-700 transition duration-150">
+                                        Register Building
+                                    </button>
+                                </div>
+                            </div>
+            
+                            <h3 class="text-xl font-semibold mb-4 border-b pb-2 mt-8">Registered Properties</h3>
+                            <div id="building-list-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- //need imporve  -->
+                                <p class="text-gray-500 text-center col-span-full">No buildings registered yet.</p>
+                            </div>
+                        </div>
+            
+                        <div id="FLOOR_CONFIG_VIEW" class="view hidden">
+                            <h2 id="floor-config-title" class="text-2xl font-semibold mb-6 text-blue-700">2. Configure Floors for [Building Name]</h2>
+                            
+                            <div class="flex justify-between items-center mb-6">
+                                <button id="back-to-buildings-btn" class="px-4 py-2 bg-gray-300 text-gray-800 font-semibold rounded-md shadow-md hover:bg-gray-400 transition duration-150 text-sm">
+                                    &#x2190; Back to Building List
+                                </button>
+                            </div>
+                            
+                            <div class="mb-6 p-4 border border-blue-200 bg-blue-50 rounded-lg">
+                                <label for="floor-count" class="block text-sm font-medium text-gray-700 mb-2">Number of Floors</label>
+                                <div class="flex space-x-3">
+                                    <input type="number" id="floor-count" min="1" class="flex-grow px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., 5">
+                                    <button id="generate-floor-inputs" class="px-5 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition duration-150">
+                                        Generate Floor Inputs
+                                    </button>
+                                </div>
+                            </div>
+            
+                            <div id="floor-inputs-container" class="space-y-4 mb-6 p-4 border border-gray-200 rounded-lg">
+                                <p class="text-gray-500 text-center">Define the number of rooms for each floor here.</p>
+                            </div>
+            
+                            <button id="finalize-structure" class="w-full px-6 py-3 bg-green-600 text-white font-bold text-lg rounded-md shadow-lg hover:bg-green-700 transition duration-150 hidden">
+                                Finalize Structure & Go to Map
+                            </button>
+                        </div>
+            
+                        <div id="MAP_VIEW" class="view hidden">
+                            <h2 class="text-2xl font-semibold mb-6">3. Interactive Room Map for <span id="map-building-name" class="text-blue-700">[Building Name]</span> (Click to Edit Details)</h2>
+                            <div id="map-display" class="space-y-6">
+                                <p class="text-gray-500 text-center">Configuration required.</p>
+                            </div>
+                        </div>
+            
+                        <div id="DETAIL_VIEW" class="view hidden">
+                            <h2 id="detail-title" class="text-2xl font-semibold mb-6 text-blue-700">Room Details: [Room Key]</h2>
+                            
+                            <div class="mb-6 p-4 border border-gray-200 rounded-lg">
+                                <label for="room-general-details" class="block text-lg font-medium text-gray-700 mb-2">Room General Notes</label>
+                                <textarea id="room-general-details" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Room furnished, includes utilities..."></textarea>
+                            </div>
+            
+                            <h3 class="text-xl font-semibold mb-4 border-b pb-2 mt-8">Active Occupant Registry</h3>
+                            
+                            <div id="occupant-add-form-container" class="p-4 bg-gray-50 border border-gray-200 rounded-lg mb-4">
+                                <h4 class="font-bold mb-3">Add New Occupant:</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                                    <input type="text" id="reg-name" placeholder="Name" class="p-2 border rounded-md">
+                                    <input type="text" id="reg-aadhar" placeholder="Aadhar No." class="p-2 border rounded-md">
+                                    <input type="date" id="reg-join-date" placeholder="Join Date" class="p-2 border rounded-md">
+                                    <input type="number" id="reg-security" placeholder="Security (₹)" min="0" class="p-2 border rounded-md">
+                                    
+                                    <div class="col-span-1">
+                                        <label class="block text-xs font-medium text-gray-700">Identity Proof (PDF/Image)</label>
+                                        <input type="file" id="reg-proof-file" class="hidden" accept=".pdf, image/*">
+                                        <div class="flex items-center space-x-2">
+                                            <button id="upload-id-proof-btn" type="button" class="px-3 py-1.5 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 text-sm" onclick="document.getElementById('reg-proof-file').click()">
+                                                Upload
+                                            </button>
+                                            <span id="id-proof-filename" class="text-xs text-gray-500 truncate flex-1" title="Recommended max size: 5MB">Max 5MB (simulated)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button id="add-occupant-btn" class="mt-3 px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-150">
+                                    Add Occupant to Room (0/6 used)
+                                </button>
+                                <p id="reg-status" class="text-sm mt-2 text-green-500"></p>
+                            </div>
+            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 shadow overflow-hidden sm:rounded-lg">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-3 py-3 text-xs font-medium text-gray-500">Name</th>
+                                            <th class="px-3 py-3 text-xs font-medium text-gray-500">Aadhar No.</th>
+                                            <th class="px-3 py-3 text-xs font-medium text-gray-500">Join Date</th>
+                                            <th class="px-3 py-3 text-xs font-medium text-gray-500 text-right">Security (₹)</th>
+                                            <th class="px-3 py-3 text-xs font-medium text-gray-500 text-center">ID Proof Status</th>
+                                            <th class="px-3 py-3 text-xs font-medium text-gray-500 text-right actions-cell">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="occupant-registry-body" class="bg-white divide-y divide-gray-200">
+                                        </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="mt-8 border-t pt-4">
+                                <button id="toggle-past-occupants" class="text-sm font-medium text-blue-600 hover:text-blue-800 transition duration-150">
+                                    &#x25BC; Show Past Occupants (Historical Records)
+                                </button>
+                                <div id="past-occupants-container" class="hidden mt-4">
+                                    <h4 class="text-lg font-semibold mb-2">Past Occupants</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200 shadow overflow-hidden sm:rounded-lg">
+                                            <thead class="bg-yellow-50">
+                                                <tr>
+                                                    <th class="px-3 py-3 text-xs font-medium text-gray-700">Name</th>
+                                                    <th class="px-3 py-3 text-xs font-medium text-gray-700">Join Date</th>
+                                                    <th class="px-3 py-3 text-xs font-medium text-gray-700">Leave Date</th>
+                                                    <th class="px-3 py-3 text-xs font-medium text-gray-700 text-right">Security (₹)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="past-occupants-body" class="bg-white divide-y divide-gray-200">
+                                                </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div class="mt-8 flex justify-between items-center border-b pb-2">
+                                <h3 class="text-xl font-semibold">Monthly Financial & Payment Tracking</h3>
+                                <select id="month-selector" class="p-2 border border-gray-300 rounded-md text-sm font-medium">
+                                    </select>
+                            </div>
+                            
+                            <div id="financial-add-form-container" class="p-4 bg-blue-50 border border-blue-200 rounded-lg mt-4 mb-4">
+                                <h4 class="font-bold mb-3">Add Monthly Payment Details:</h4>
+                                <div class="grid grid-cols-2 md:grid-cols-6 gap-3 items-end">
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-xs font-medium text-gray-700">Name</label>
+                                        <select id="fin-name" class="w-full p-2 border rounded-md"></select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Date</label>
+                                        <input type="date" id="fin-date" class="w-full p-2 border rounded-md">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Base Rent (₹)</label>
+                                        <input type="number" id="fin-base-rent" min="0" placeholder="0" class="w-full p-2 border rounded-md">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Bills/Share (₹)</label>
+                                        <input type="number" id="fin-bills" min="0" placeholder="0" class="w-full p-2 border rounded-md">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-700">Paid Amount (₹)</label>
+                                        <input type="number" id="fin-paid" min="0" placeholder="0" class="w-full p-2 border rounded-md">
+                                    </div>
+                                    <div class="col-span-2 md:col-span-1">
+                                        <label class="block text-xs font-medium text-gray-700">Payment Proof</label>
+                                        <div class="flex items-center space-x-2">
+                                            <input type="file" id="fin-proof-file" class="hidden" accept="image/*, application/pdf">
+                                            <button onclick="document.getElementById('fin-proof-file').click()" class="px-3 py-1.5 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400 text-sm">
+                                                Attach
+                                            </button>
+                                            <span id="proof-filename" class="text-xs text-gray-500 truncate flex-1">No file selected.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button id="add-financial-btn" class="mt-3 px-4 py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-150">
+                                    Save Monthly Entry
+                                </button>
+                                <p id="fin-status" class="text-sm mt-2 text-red-500"></p>
+                            </div>
+            
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 shadow overflow-hidden sm:rounded-lg tenant-table">
+                                    <thead class="bg-blue-50">
+                                        <tr>
+                                            <th class="text-xs font-medium text-gray-700">Name</th>
+                                            <th class="text-xs font-medium text-gray-700">Date</th>
+                                            <th class="text-xs font-medium text-gray-700 text-right">Base Rent (₹)</th>
+                                            <th class="text-xs font-medium text-gray-700 text-right">Bills/Share (₹)</th>
+                                            <th class="text-xs font-medium text-gray-700 text-right">Due (₹)</th>
+                                            <th class="text-xs font-medium text-gray-700 text-right">Paid (₹)</th>
+                                            <th class="text-xs font-medium text-gray-700 text-center">Proof Status</th>
+                                            <th class="text-xs font-medium text-gray-700 text-right actions-cell">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="monthly-ledger-body" class="bg-white divide-y divide-gray-200">
+                                        </tbody>
+                                </table>
+                            </div>
+            
+                            <div class="mt-8 p-4 bg-white rounded-lg border border-gray-200 shadow-md">
+                                <h3 class="text-xl font-semibold mb-4 border-b pb-2">Financial Health (Current Month)</h3>
+                                <div id="room-financial-chart-container" class="chart-container mx-auto w-full max-w-sm">
+                                    <canvas id="room-financial-chart"></canvas>
+                                </div>
+                            </div>
+            
+                            <div class="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <h3 class="text-xl font-semibold mb-3">AI Assistant ✨ (Powered by Gemini)</h3>
+                                
+                                <div class="flex flex-wrap gap-3">
+                                    <button id="generate-action-plan-btn" class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-md shadow-md hover:bg-purple-700 transition duration-150 text-sm">
+                                        Generate Room Action Plan ✨
+                                    </button>
+                                    
+                                    <button id="generate-rent-notice-btn" class="px-4 py-2 bg-orange-600 text-white font-semibold rounded-md shadow-md hover:bg-orange-700 transition duration-150 text-sm hidden">
+                                        Generate Rent Notice Draft ✨
+                                    </button>
+                                </div>
+            
+                                <div id="ai-loading-indicator" class="text-sm text-gray-500 mt-4 hidden">
+                                    Generating draft... Please wait.
+                                </div>
+                                
+                                <div id="ai-output-container" class="mt-4 p-3 bg-white border border-dashed border-gray-300 rounded-lg hidden">
+                                    <p class="text-gray-700 text-sm font-semibold mb-2">AI Output:</p>
+                                    <pre id="ai-output" class="text-sm whitespace-pre-wrap font-mono"></pre>
+                                    <div class="flex justify-end mt-2">
+                                        <button id="copy-ai-output" class="text-xs text-blue-600 hover:text-blue-800 transition duration-150">Copy to Clipboard</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between mt-8 space-x-4">
+                                <button id="save-room-details" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 transition duration-150 flex-1">
+                                    Save General Notes (and refresh data)
+                                </button>
+                                <button data-view="MAP_VIEW" class="nav-button px-6 py-3 bg-gray-300 text-gray-800 font-semibold rounded-md shadow-md hover:bg-gray-400 transition duration-150">
+                                    Back to Map
+                                </button>
+                            </div>
+                            <p id="detail-status" class="mt-3 text-center text-sm font-medium"></p>
+                        </div>
+            
+                        <div id="TENANT_VIEW" class="view hidden">
+                            <h2 class="text-2xl font-semibold mb-6">Global Tenant Financial Registry (Current Month)</h2>
+                            <div class="mb-4">
+                                <input type="text" id="tenant-search" placeholder="Search by Name or Aadhar..." class="w-full px-4 py-2 border border-gray-300 rounded-md">
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-gray-200 shadow overflow-hidden sm:rounded-lg tenant-table">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="text-xs font-medium text-gray-500">Building / Room</th>
+                                            <th class="text-xs font-medium text-gray-500">Name</th>
+                                            <th class="text-xs font-medium text-gray-500">Aadhar No.</th>
+                                            <th class="text-xs font-medium text-gray-500">Join Date</th>
+                                            <th class="text-xs font-medium text-gray-500 text-right">Security (₹)</th>
+                                            <th class="text-xs font-medium text-gray-500 text-right">Base Rent (₹)</th>
+                                            <th class="text-xs font-medium text-gray-500 text-right">Total Due (₹)</th>
+                                            <th class="text-xs font-medium text-gray-500 text-right">Paid (₹)</th>
+                                            <th class="text-xs font-medium text-gray-500 text-center">Proof</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tenant-registry-body" class="bg-white divide-y divide-gray-200">
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+            
+                        <div id="REPORT_VIEW" class="view hidden">
+                            <h2 class="text-2xl font-semibold mb-6">Financial & Occupancy Report for <span id="report-building-name" class="text-blue-700">[Building Name]</span> (Current Month)</h2>
+                            
+                            <div id="report-metrics" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                </div>
+                            
+                            <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-md">
+                                    <h3 class="text-lg font-semibold mb-3 text-center">Overall Financial Status (Current Month)</h3>
+                                    <div class="chart-container-report-doughnut mx-auto max-w-xs">
+                                        <canvas id="building-financial-chart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-md">
+                                    <h3 class="text-lg font-semibold mb-3 text-center">Overall Occupancy Status</h3>
+                                    <div class="chart-container-report-doughnut mx-auto max-w-xs">
+                                        <canvas id="building-occupancy-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <div class="mt-8">
+                                <h3 class="text-xl font-semibold mb-4 border-b pb-2">Floor-by-Floor Financials (Current Month)</h3>
+                                <div class="p-4 bg-white rounded-lg border border-gray-200 shadow-md">
+                                    <div class="chart-container-report-bar">
+                                        <canvas id="floor-breakdown-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+            
+                    </div>
+                </div>
+                
+                <div id="action-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
+                    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
+                        <h3 id="modal-title" class="text-xl font-bold mb-4"></h3>
+                        <p id="modal-body" class="mb-4 text-sm text-gray-700"></p>
+                        <div id="leave-date-container" class="mb-4 hidden">
+                            <label for="leave-date-input" class="block text-sm font-medium text-gray-700 mb-2">Final Occupancy Date:</label>
+                            <input type="date" id="leave-date-input" class="w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                        <div class="flex justify-end space-x-3">
+                            <button id="cancel-action-btn" class="px-4 py-2 bg-gray-300 rounded-md">Cancel</button>
+                            <button id="confirm-action-btn" class="px-4 py-2 bg-red-600 text-white rounded-md"></button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <style>
+                    body { font-family: 'Inter', sans-serif; }
+                    .view-content { min-height: 70vh; }
+                    .tenant-table th, .tenant-table td { padding: 0.5rem 0.75rem; }
+                    .tenant-table th { text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+                    .building-card { min-height: 120px; }
+                    .chart-container { position: relative; height: 300px; max-height: 350px; }
+                    .chart-container-report-bar { position: relative; height: 350px; }
+                    .chart-container-report-doughnut { position: relative; height: 300px; }
+                    .actions-cell { width: 120px; min-width: 120px; }
+                </style>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+                
+                
+                </section>
+
+            <section id="pgSection" class="section hidden">
+                <div class="section__header">
+                    <h2>PG Owner Management</h2>
+                    <button id="addPGBtn" class="btn btn--primary">Add New Member</button>
+                </div>
+
+                <div id="pgForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="pgFormTitle">Add New PG Member</h3>
+                            <button id="closePGForm" class="btn btn--ghost">×</button>
+                        </div>
+                        <div class="card__body">
+                            <form id="pgOwnerForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="memberName">Member Name</label>
+                                        <input type="text" id="memberName" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="bedNumber">Bed Number</label>
+                                        <input type="text" id="bedNumber" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="monthlyRent">Monthly Rent (₹)</label>
+                                        <input type="number" id="monthlyRent" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="pgJoinDate">Join Date</label>
+                                        <input type="date" id="pgJoinDate" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="electricityCharge">Electricity Charge (₹)</label>
+                                        <input type="number" id="electricityCharge" value="0">
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="foodCharge">Food Charge (₹)</label>
+                                        <input type="number" id="foodCharge" value="0">
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="pgMemberStatus">Member Status</label>
+                                        <select id="pgMemberStatus" required>
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Member</button>
+                                    <button type="button" id="cancelPGForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>PG Member Records</h3>
+                            <input type="text" id="pgSearch" placeholder="Search Member..." class="form__group" oninput="searchRecords('pg')"/>
+
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="pgTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Member Name</th>
+                                            <th>Bed No.</th>
+                                            <th>Monthly Rent</th>
+                                            <th>Join Date</th>
+                                            <th>Electricity</th>
+                                            <th>Food Charge</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="messSection" class="section hidden">
+                <div class="section__header">
+                    <h2>Mess Owner Management</h2>
+                    <button id="addMessBtn" class="btn btn--primary">Add Food Expense</button>
+                </div>
+
+                <div id="messForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="messFormTitle">Add Food Expense</h3>
+                            <button id="closeMessForm" class="btn btn--ghost">×</button>
+                        </div>
+                        <div class="card__body">
+                            <form id="messOwnerForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="messDate">Date</label>
+                                        <input type="date" id="messDate" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="mealType">Meal Type</label>
+                                        <select id="mealType" required>
+                                            <option value="Breakfast">Breakfast</option>
+                                            <option value="Lunch">Lunch</option>
+                                            <option value="Dinner">Dinner</option>
+                                            <option value="Snacks">Snacks</option>
+                                        </select>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expense">Total Expense (₹)</label>
+                                        <input type="number" id="expense" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="memberCount">Number of Members</label>
+                                        <input type="number" id="memberCount" required min="1">
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Expense</button>
+                                    <button type="button" id="cancelMessForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Food Expense Records</h3>
+
+                            <input type="text" id="messSearch" placeholder="Search Meal Type..." class="form__group" oninput="searchRecords('mess')" />
+
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="messTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Meal Type</th>
+                                            <th>Total Expense</th>
+                                            <th>Members</th>
+                                            <th>Per Person Cost</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="personalSection" class="section hidden">
+                <div class="section__header">
+                    <h2>Personal Expenses</h2>
+                    <button id="addPersonalBtn" class="btn btn--primary">Add New Expense</button>
+                </div>
+
+                <div id="personalForm" class="form-container hidden">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3 id="personalFormTitle">Add Personal Expense</h3>
+                            <button id="closePersonalForm" class="btn btn--ghost">×</button>
+                        </div>
+                        <div class="card__body">
+                            <form id="personalExpensesForm">
+                                <div class="form__grid">
+                                    <div class="form__group">
+                                        <label for="expenseDescription">Description</label>
+                                        <input type="text" id="expenseDescription" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expenseAmount">Amount (₹)</label>
+                                        <input type="number" id="expenseAmount" required>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expenseCategory">Category</label>
+                                        <select id="expenseCategory" required>
+                                            <option value="Food">Food</option>
+                                            <option value="Transport">Transport</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Bills">Bills</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Healthcare">Healthcare</option>
+                                            <option value="Education">Education</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="form__group">
+                                        <label for="expenseDate">Date</label>
+                                        <input type="date" id="expenseDate" required>
+                                    </div>
+                                </div>
+                                <div class="form__actions">
+                                    <button type="submit" class="btn btn--primary">Save Expense</button>
+                                    <button type="button" id="cancelPersonalForm" class="btn btn--ghost">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-container">
+                    <div class="card">
+                        <div class="card__header">
+                            <h3>Personal Expense Records</h3>
+                            <input type="text" id="personalSearch" placeholder="Search Description..." class="form__group" oninput="searchRecords('personal')" />
+                        </div>
+                        <div class="card__body">
+                            <div class="table-container">
+                                <table id="personalTable" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Amount</th>
+                                            <th>Category</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
